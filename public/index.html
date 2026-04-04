@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DanceStudio</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body data-page="login">
+    <main class="layout">
+      <section class="landing-hero">
+        <div class="hero-shell">
+          <div class="hero-copy">
+            <span class="brand-mark">DanceStudio</span>
+            <p class="eyebrow">Главная</p>
+            <h1>Управление школой в одном окне.</h1>
+            <p class="lead">
+              Расписание, группы, посещаемость и абонементы в одном рабочем
+              пространстве без лишних экранов.
+            </p>
+
+            <div class="hero-summary">
+              <article class="hero-summary-card">
+                <span class="label">Что внутри</span>
+                <strong>Администратор, преподаватель и ученик</strong>
+              </article>
+              <article class="hero-summary-card">
+                <span class="label">Рабочий контур</span>
+                <strong>Занятия, остатки абонементов и отчеты</strong>
+              </article>
+            </div>
+
+            <div class="hero-tags">
+              <span class="hero-tag">Расписание</span>
+              <span class="hero-tag">Посещаемость</span>
+              <span class="hero-tag">Абонементы</span>
+            </div>
+          </div>
+
+          <section class="login-panel">
+            <div class="panel-header">
+              <p class="eyebrow">Вход</p>
+              <h2>Рабочее пространство</h2>
+            </div>
+
+            <p class="panel-copy">
+              Используйте email и пароль, выданные администратором школы.
+            </p>
+
+            <form id="login-form" class="login-form hero-login-form">
+              <label class="field">
+                <span>Email</span>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autocomplete="username"
+                  placeholder="name@studio.ru"
+                  required
+                />
+              </label>
+
+              <label class="field">
+                <span>Пароль</span>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  placeholder="Введите пароль"
+                  required
+                />
+              </label>
+
+              <button type="submit" class="primary-button">Войти</button>
+            </form>
+
+            <p id="auth-message" class="auth-message"></p>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+  </html>

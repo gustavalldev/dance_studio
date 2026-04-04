@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DanceStudio Teacher</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body data-page="teacher">
+    <main class="layout">
+      <section id="teacher-workspace" class="teacher-workspace hidden">
+        <div class="admin-shell-header">
+          <div class="panel-header">
+            <p class="eyebrow">Рабочее место преподавателя</p>
+            <h2>Недельный поток занятий и посещаемость</h2>
+            <p class="panel-copy">
+              Календарь недели, текущий поток и полная карточка выбранного занятия собраны в
+              одном экране.
+            </p>
+          </div>
+
+          <div class="admin-session">
+            <div class="admin-session-item">
+              <span class="label">Пользователь</span>
+              <strong id="current-user">-</strong>
+            </div>
+            <div class="admin-session-item">
+              <span class="label">Роль</span>
+              <strong id="current-role">-</strong>
+            </div>
+            <button id="logout-button" type="button" class="secondary-button">
+              Выйти
+            </button>
+          </div>
+        </div>
+
+        <p id="teacher-message" class="auth-message"></p>
+        <div id="teacher-summary" class="summary-grid"></div>
+
+        <div class="teacher-crm-layout">
+          <div class="teacher-crm-main">
+            <div class="workspace-switcher" role="tablist" aria-label="Режим кабинета преподавателя">
+              <button
+                type="button"
+                class="workspace-switch-button"
+                data-teacher-view="today"
+                role="tab"
+                aria-selected="false"
+              >
+                Сегодня
+              </button>
+              <button
+                type="button"
+                class="workspace-switch-button is-active"
+                data-teacher-view="week"
+                role="tab"
+                aria-selected="true"
+              >
+                Неделя
+              </button>
+              <button
+                type="button"
+                class="workspace-switch-button"
+                data-teacher-view="archive"
+                role="tab"
+                aria-selected="false"
+              >
+                Архив
+              </button>
+            </div>
+
+            <section class="workspace-panel hidden" data-teacher-panel="today" role="tabpanel">
+              <div class="workspace-panel-head">
+                <div>
+                  <span class="label">Сегодня</span>
+                  <h3>Занятия текущего дня</h3>
+                </div>
+              </div>
+              <div id="teacher-today-lessons-list" class="teacher-stream-list"></div>
+            </section>
+
+            <section class="workspace-panel" data-teacher-panel="week" role="tabpanel">
+              <div class="workspace-panel-head teacher-week-head">
+                <div>
+                  <span class="label">Календарь</span>
+                  <h3>Недельный план</h3>
+                </div>
+
+                <div class="teacher-week-nav">
+                  <button id="teacher-week-prev" type="button" class="secondary-button">
+                    Пред.
+                  </button>
+                  <button id="teacher-week-current" type="button" class="secondary-button">
+                    Текущая
+                  </button>
+                  <button id="teacher-week-next" type="button" class="secondary-button">
+                    След.
+                  </button>
+                </div>
+              </div>
+
+              <div class="teacher-week-range">
+                <span class="label">Период</span>
+                <strong id="teacher-week-range">-</strong>
+              </div>
+
+              <div id="teacher-week-days" class="teacher-week-days"></div>
+
+              <div class="teacher-week-board">
+                <div class="workspace-panel-head teacher-week-board-head">
+                  <div>
+                    <span class="label">Выбранный день</span>
+                    <h3 id="teacher-week-day-title">Занятия недели</h3>
+                  </div>
+                </div>
+                <div id="teacher-week-lessons-list" class="teacher-stream-list"></div>
+              </div>
+            </section>
+
+            <section class="workspace-panel hidden" data-teacher-panel="archive" role="tabpanel">
+              <div class="workspace-panel-head">
+                <div>
+                  <span class="label">История</span>
+                  <h3>Прошедшие занятия</h3>
+                </div>
+              </div>
+              <div id="teacher-archive-lessons-list" class="teacher-stream-list"></div>
+            </section>
+          </div>
+
+          <aside class="admin-panel teacher-focus-panel">
+            <div class="workspace-panel-head">
+              <div>
+                <span class="label">Карточка занятия</span>
+                <h3>Фокус преподавателя</h3>
+              </div>
+            </div>
+            <div id="teacher-lesson-focus"></div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

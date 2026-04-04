@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DanceStudio Student</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body data-page="student">
+    <main class="layout">
+      <section id="student-workspace" class="student-workspace hidden">
+        <div class="admin-shell-header">
+          <div class="panel-header">
+            <p class="eyebrow">Личный кабинет ученика</p>
+            <h2>Мое расписание, абонементы и посещаемость</h2>
+            <p class="panel-copy">
+              Основной обзор сверху, а детали разнесены по отдельным режимам, чтобы кабинет не
+              выглядел перегруженным.
+            </p>
+          </div>
+
+          <div class="admin-session">
+            <div class="admin-session-item">
+              <span class="label">Пользователь</span>
+              <strong id="current-user">-</strong>
+            </div>
+            <div class="admin-session-item">
+              <span class="label">Роль</span>
+              <strong id="current-role">-</strong>
+            </div>
+            <button id="logout-button" type="button" class="secondary-button">
+              Выйти
+            </button>
+          </div>
+        </div>
+
+        <p id="student-message" class="auth-message"></p>
+        <div id="student-summary" class="summary-grid"></div>
+
+        <div class="workspace-switcher" role="tablist" aria-label="Режим кабинета ученика">
+          <button
+            type="button"
+            class="workspace-switch-button is-active"
+            data-student-view="overview"
+            role="tab"
+            aria-selected="true"
+          >
+            Обзор
+          </button>
+          <button
+            type="button"
+            class="workspace-switch-button"
+            data-student-view="schedule"
+            role="tab"
+            aria-selected="false"
+          >
+            Расписание
+          </button>
+          <button
+            type="button"
+            class="workspace-switch-button"
+            data-student-view="subscriptions"
+            role="tab"
+            aria-selected="false"
+          >
+            Абонементы
+          </button>
+          <button
+            type="button"
+            class="workspace-switch-button"
+            data-student-view="attendance"
+            role="tab"
+            aria-selected="false"
+          >
+            Посещаемость
+          </button>
+        </div>
+
+        <section class="workspace-panel" data-student-panel="overview" role="tabpanel">
+          <div class="student-grid">
+            <section class="admin-panel">
+              <div class="panel-topline compact">
+                <div>
+                  <span class="label">Профиль</span>
+                  <h3>Мои данные</h3>
+                </div>
+              </div>
+              <div id="student-profile-card" class="profile-card"></div>
+            </section>
+
+            <section class="admin-panel">
+              <div class="panel-topline compact">
+                <div>
+                  <span class="label">Группы</span>
+                  <h3>Мои группы</h3>
+                </div>
+              </div>
+              <div id="student-groups-list" class="entity-list"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="workspace-panel hidden" data-student-panel="schedule" role="tabpanel">
+          <div class="workspace-panel-head">
+            <div>
+              <span class="label">Расписание</span>
+              <h3>Мои занятия</h3>
+            </div>
+          </div>
+          <div id="student-schedule-list" class="entity-list"></div>
+        </section>
+
+        <section class="workspace-panel hidden" data-student-panel="subscriptions" role="tabpanel">
+          <div class="workspace-panel-head">
+            <div>
+              <span class="label">Абонементы</span>
+              <h3>Мои абонементы</h3>
+            </div>
+          </div>
+          <div id="student-subscriptions-list" class="entity-list"></div>
+        </section>
+
+        <section class="workspace-panel hidden" data-student-panel="attendance" role="tabpanel">
+          <div class="workspace-panel-head">
+            <div>
+              <span class="label">Посещаемость</span>
+              <h3>История посещений</h3>
+            </div>
+          </div>
+          <div id="student-attendance-list" class="entity-list"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

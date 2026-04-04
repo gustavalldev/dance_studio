@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DanceStudio Admin</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body data-page="admin">
+    <main class="layout">
+      <section id="admin-workspace" class="admin-workspace hidden">
+        <div class="admin-shell-header">
+          <div class="panel-header">
+            <p class="eyebrow">Управление школой</p>
+            <h2>Панель администратора</h2>
+          </div>
+
+          <div class="admin-session">
+            <div class="admin-session-item">
+              <span class="label">Пользователь</span>
+              <strong id="current-user">-</strong>
+            </div>
+            <div class="admin-session-item">
+              <span class="label">Роль</span>
+              <strong id="current-role">-</strong>
+            </div>
+            <button id="logout-button" type="button" class="secondary-button">
+              Выйти
+            </button>
+          </div>
+        </div>
+
+        <p id="admin-message" class="auth-message"></p>
+
+        <div class="admin-tabs" role="tablist" aria-label="Разделы панели администратора">
+          <button
+            type="button"
+            class="admin-tab-button is-active"
+            data-admin-tab="directory"
+            role="tab"
+            aria-selected="true"
+          >
+            Люди
+          </button>
+          <button
+            type="button"
+            class="admin-tab-button"
+            data-admin-tab="education"
+            role="tab"
+            aria-selected="false"
+          >
+            Группы и расписание
+          </button>
+          <button
+            type="button"
+            class="admin-tab-button"
+            data-admin-tab="operations"
+            role="tab"
+            aria-selected="false"
+          >
+            Абонементы и отчеты
+          </button>
+        </div>
+
+        <section class="admin-tab-panel" data-admin-tab-panel="directory" role="tabpanel">
+          <div class="admin-tab-header">
+            <div>
+              <span class="label">Раздел</span>
+              <h3>Люди</h3>
+            </div>
+            <p>Все, что связано с учетными записями учеников и преподавателей.</p>
+          </div>
+
+          <div class="admin-grid">
+            <section class="admin-panel directory-panel">
+              <div class="panel-topline compact">
+                <div>
+                  <span class="label">Справочник</span>
+                  <h3>Ученики</h3>
+                  <p class="panel-copy">
+                    Компактный список. Полная карточка и редактирование открываются по клику.
+                  </p>
+                </div>
+                <button id="reset-student-form" type="button" class="secondary-button">
+                  Новый ученик
+                </button>
+              </div>
+
+              <div id="students-list" class="directory-list"></div>
+            </section>
+
+            <section class="admin-panel directory-panel">
+              <div class="panel-topline compact">
+                <div>
+                  <span class="label">Справочник</span>
+                  <h3>Преподаватели</h3>
+                  <p class="panel-copy">
+                    Короткий список для навигации и полная карточка только в раскрытом состоянии.
+                  </p>
+                </div>
+                <button id="reset-teacher-form" type="button" class="secondary-button">
+                  Новый преподаватель
+                </button>
+              </div>
+
+              <div id="teachers-list" class="directory-list"></div>
+            </section>
+          </div>
+        </section>
+
+        <section
+          class="admin-tab-panel hidden"
+          data-admin-tab-panel="education"
+          role="tabpanel"
+        >
+          <div class="admin-tab-header">
+            <div>
+              <span class="label">Раздел</span>
+              <h3>Учебный процесс</h3>
+            </div>
+            <p>Группы, преподаватели, даты занятий и организация расписания.</p>
+          </div>
+
+          <div class="admin-grid">
+            <section class="admin-panel">
+              <div class="panel-topline">
+                <div>
+                  <span class="label">Учебный процесс</span>
+                  <h3>Группы</h3>
+                </div>
+                <button id="reset-group-form" type="button" class="secondary-button">
+                  Новая запись
+                </button>
+              </div>
+
+              <form id="group-form" class="entity-form">
+                <input id="group-id" type="hidden" />
+                <div class="field-grid">
+                  <label class="field">
+                    <span>Название группы</span>
+                    <input id="group-name" type="text" required />
+                  </label>
+                  <label class="field">
+                    <span>Преподаватель</span>
+                    <select id="group-teacher-id" required></select>
+                  </label>
+                  <label class="field">
+                    <span>Уровень</span>
+                    <input id="group-level" type="text" />
+                  </label>
+                  <label class="field">
+                    <span>Возрастная категория</span>
+                    <input id="group-age-category" type="text" />
+                  </label>
+                  <div class="field field-span-2">
+                    <span>Состав группы</span>
+                    <div class="group-picker-shell">
+                      <div class="group-picker-header">
+                        <button
+                          id="toggle-group-picker"
+                          type="button"
+                          class="group-picker-toggle"
+                          aria-expanded="false"
+                          aria-controls="group-picker-panel"
+                        >
+                          <span class="group-picker-toggle-copy">
+                            <strong id="group-selected-count">0 учеников</strong>
+                            <span id="group-selected-preview" class="group-picker-preview">
+                              Состав пока не заполнен.
+                            </span>
+                          </span>
+                          <span id="group-picker-toggle-icon" class="group-picker-toggle-icon">
+                            +
+                          </span>
+                        </button>
+                        <button
+                          id="clear-group-selection"
+                          type="button"
+                          class="secondary-button"
+                        >
+                          Очистить состав
+                        </button>
+                      </div>
+
+                      <div id="group-picker-panel" class="group-picker hidden">
+                        <div class="group-picker-toolbar">
+                          <label class="group-picker-search">
+                            <span class="label">Поиск по ученикам</span>
+                            <input
+                              id="group-student-search"
+                              type="search"
+                              placeholder="Имя или email"
+                              autocomplete="off"
+                            />
+                          </label>
+                          <div class="group-picker-status">
+                            <div class="group-picker-summary">
+                              <span class="label">Сейчас в группе</span>
+                              <strong id="group-selected-panel-count">0 учеников</strong>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div id="group-selected-students" class="group-selection-chips"></div>
+
+                        <div class="group-picker-results">
+                          <div class="group-picker-results-topline">
+                            <span class="label">Доступные ученики</span>
+                            <span
+                              id="group-student-results-meta"
+                              class="group-picker-meta"
+                            ></span>
+                          </div>
+                          <div id="group-student-options" class="group-student-option-list"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <select id="group-student-ids" class="native-multiselect-hidden" multiple></select>
+                    <small class="field-hint">
+                      Поиск работает по имени и email. Клик по ученику добавляет его в состав.
+                    </small>
+                  </div>
+                </div>
+                <button type="submit" class="primary-button">
+                  Сохранить группу
+                </button>
+              </form>
+
+              <div id="groups-list" class="entity-list"></div>
+            </section>
+
+            <section class="admin-panel">
+              <div class="panel-topline">
+                <div>
+                  <span class="label">Учебный процесс</span>
+                  <h3>Расписание</h3>
+                </div>
+                <button id="reset-schedule-form" type="button" class="secondary-button">
+                  Новая запись
+                </button>
+              </div>
+
+              <form id="schedule-form" class="entity-form">
+                <input id="schedule-id" type="hidden" />
+                <div class="field-grid">
+                  <label class="field">
+                    <span>Группа</span>
+                    <select id="schedule-group-id" required></select>
+                  </label>
+                  <label class="field">
+                    <span>Дата занятия</span>
+                    <input id="schedule-lesson-date" type="date" required />
+                  </label>
+                  <label class="field">
+                    <span>Начало</span>
+                    <input id="schedule-start-time" type="time" required />
+                  </label>
+                  <label class="field">
+                    <span>Окончание</span>
+                    <input id="schedule-end-time" type="time" required />
+                  </label>
+                  <label class="field">
+                    <span>Зал</span>
+                    <input id="schedule-room" type="text" required />
+                  </label>
+                </div>
+                <button type="submit" class="primary-button">
+                  Сохранить занятие
+                </button>
+              </form>
+
+              <div id="schedule-list" class="entity-list"></div>
+            </section>
+          </div>
+        </section>
+
+        <section
+          class="admin-tab-panel hidden"
+          data-admin-tab-panel="operations"
+          role="tabpanel"
+        >
+          <div class="admin-tab-header">
+            <div>
+              <span class="label">Раздел</span>
+              <h3>Абонементы и отчеты</h3>
+            </div>
+            <p>Финансовый контур, остатки занятий и оперативная отчетность школы.</p>
+          </div>
+
+          <div class="operations-switcher" role="tablist" aria-label="Раздел внутри вкладки">
+            <button
+              type="button"
+              class="operations-switch-button is-active"
+              data-operations-view="subscriptions"
+              role="tab"
+              aria-selected="true"
+            >
+              Абонементы
+            </button>
+            <button
+              type="button"
+              class="operations-switch-button"
+              data-operations-view="reports"
+              role="tab"
+              aria-selected="false"
+            >
+              Отчеты
+            </button>
+          </div>
+
+          <section class="operations-panel" data-operations-panel="subscriptions" role="tabpanel">
+            <div class="admin-grid">
+              <section class="admin-panel wide-panel">
+                <div class="panel-topline compact">
+                  <div>
+                    <span class="label">Финансы и доступ</span>
+                    <h3>Абонементы</h3>
+                    <p class="panel-copy">
+                      Список действующих и завершенных абонементов. Редактор открывается только
+                      по действию.
+                    </p>
+                  </div>
+                  <button id="reset-subscription-form" type="button" class="secondary-button">
+                    Новый абонемент
+                  </button>
+                </div>
+
+                <div id="subscription-form-panel" class="subscription-editor hidden">
+                  <div class="subscription-editor-header">
+                    <div>
+                      <span class="label">Редактор</span>
+                      <h4>Карточка абонемента</h4>
+                    </div>
+                    <button id="toggle-subscription-form" type="button" class="secondary-button">
+                      Скрыть форму
+                    </button>
+                  </div>
+
+                  <form id="subscription-form" class="entity-form">
+                    <input id="subscription-id" type="hidden" />
+                    <div class="field-grid">
+                      <label class="field">
+                        <span>Ученик</span>
+                        <select id="subscription-student-id" required></select>
+                      </label>
+                      <label class="field">
+                        <span>Всего занятий</span>
+                        <input id="subscription-lessons-total" type="number" min="1" required />
+                      </label>
+                      <label class="field">
+                        <span>Осталось занятий</span>
+                        <input id="subscription-lessons-left" type="number" min="0" required />
+                      </label>
+                      <label class="field">
+                        <span>Статус</span>
+                        <select id="subscription-status" required>
+                          <option value="active">active</option>
+                          <option value="completed">completed</option>
+                          <option value="suspended">suspended</option>
+                        </select>
+                      </label>
+                      <label class="field">
+                        <span>Дата начала</span>
+                        <input id="subscription-start-date" type="date" required />
+                      </label>
+                      <label class="field">
+                        <span>Дата окончания</span>
+                        <input id="subscription-end-date" type="date" required />
+                      </label>
+                    </div>
+                    <button type="submit" class="primary-button">
+                      Сохранить абонемент
+                    </button>
+                  </form>
+                </div>
+
+                <div id="subscriptions-list" class="entity-list"></div>
+              </section>
+            </div>
+          </section>
+
+          <section
+            class="operations-panel hidden"
+            data-operations-panel="reports"
+            role="tabpanel"
+          >
+            <div class="admin-grid">
+              <section class="admin-panel wide-panel">
+                <div class="panel-topline compact">
+                  <div>
+                    <span class="label">Отчетность</span>
+                    <h3>Операционные отчеты</h3>
+                    <p class="panel-copy">
+                      Сводка сверху и один активный тип отчета за раз, без длинной вертикальной
+                      простыни.
+                    </p>
+                  </div>
+                </div>
+
+                <div id="reports-summary" class="summary-grid"></div>
+
+                <div class="report-switcher" role="tablist" aria-label="Тип отчета">
+                  <button
+                    type="button"
+                    class="report-switch-button is-active"
+                    data-report-view="attendance"
+                    role="tab"
+                    aria-selected="true"
+                  >
+                    Посещаемость
+                  </button>
+                  <button
+                    type="button"
+                    class="report-switch-button"
+                    data-report-view="subscriptions"
+                    role="tab"
+                    aria-selected="false"
+                  >
+                    Абонементы
+                  </button>
+                  <button
+                    type="button"
+                    class="report-switch-button"
+                    data-report-view="schedule"
+                    role="tab"
+                    aria-selected="false"
+                  >
+                    Расписание
+                  </button>
+                </div>
+
+                <div class="report-grid">
+                  <section class="report-panel" data-report-panel="attendance">
+                    <div class="panel-topline compact">
+                      <div>
+                        <span class="label">Посещаемость</span>
+                        <h4>Журнал занятий</h4>
+                      </div>
+                    </div>
+                    <div id="attendance-report-list" class="entity-list"></div>
+                  </section>
+
+                  <section class="report-panel hidden" data-report-panel="subscriptions">
+                    <div class="panel-topline compact">
+                      <div>
+                        <span class="label">Абонементы</span>
+                        <h4>Статусы и остатки</h4>
+                      </div>
+                    </div>
+                    <div id="subscriptions-report-list" class="entity-list"></div>
+                  </section>
+
+                  <section class="report-panel hidden" data-report-panel="schedule">
+                    <div class="panel-topline compact">
+                      <div>
+                        <span class="label">Расписание</span>
+                        <h4>Оперативная загрузка</h4>
+                      </div>
+                    </div>
+                    <div id="schedule-report-list" class="entity-list"></div>
+                  </section>
+                </div>
+              </section>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
