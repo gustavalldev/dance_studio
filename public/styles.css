@@ -1427,6 +1427,536 @@ body[data-page="admin"] .admin-workspace::before {
   display: none;
 }
 
+/* Design refresh: readable operational UI, higher contrast, tabular reporting. */
+:root {
+  --bg: #f5f7fa;
+  --bg-2: #e8eef3;
+  --surface: #ffffff;
+  --surface-2: #f9fbfc;
+  --surface-soft: #eef4f6;
+  --line: #d8e1e7;
+  --line-strong: #9fb1bb;
+  --ink: #172026;
+  --muted: #596b76;
+  --accent: #0f766e;
+  --accent-strong: #115e59;
+  --success: #0f766e;
+  --warning: #a15c07;
+  --danger: #b42318;
+  --shadow: 0 18px 48px rgba(28, 41, 49, 0.1);
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  color: var(--ink);
+  font-family: "Satoshi", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  background: var(--bg);
+}
+
+body::before {
+  background:
+    linear-gradient(120deg, rgba(15, 118, 110, 0.08), transparent 34%),
+    linear-gradient(180deg, #f8fafc 0%, #f2f6f8 48%, #eef3f6 100%);
+}
+
+.layout {
+  width: min(1360px, calc(100% - 48px));
+}
+
+.dashboard,
+.admin-workspace,
+.teacher-workspace,
+.student-workspace,
+.admin-panel,
+.report-panel,
+.login-panel,
+.landing-hero {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  backdrop-filter: none;
+}
+
+.dashboard::before,
+.admin-workspace::before,
+.teacher-workspace::before,
+.student-workspace::before,
+.admin-panel::before,
+.report-panel::before,
+.login-panel::before,
+.landing-hero::before,
+.landing-hero::after {
+  display: none;
+}
+
+.landing-hero {
+  min-height: calc(100dvh - 72px);
+  overflow: hidden;
+  padding: 42px;
+  background:
+    linear-gradient(105deg, rgba(15, 118, 110, 0.08) 0%, transparent 42%),
+    var(--surface);
+}
+
+.hero-shell {
+  min-height: calc(100dvh - 156px);
+  grid-template-columns: minmax(0, 1.08fr) minmax(340px, 440px);
+  gap: 56px;
+}
+
+.brand-mark,
+.hero-tag,
+.module-card,
+.directory-tag,
+.directory-token {
+  border-color: var(--line);
+  background: var(--surface-soft);
+  color: #24323a;
+}
+
+.brand-mark {
+  letter-spacing: 0.14em;
+}
+
+.eyebrow,
+.label {
+  color: #43616c;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Satoshi", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0;
+}
+
+h1 {
+  max-width: 12ch;
+  font-size: clamp(44px, 6vw, 78px);
+  line-height: 0.96;
+}
+
+.panel-header h2,
+.admin-tab-header h3,
+.panel-topline h3,
+.panel-topline h4,
+.teacher-focus-topline h4 {
+  line-height: 1.06;
+}
+
+.lead,
+.panel-copy,
+.summary-hint,
+.directory-primary span,
+.directory-row span,
+.directory-note,
+.entity-card-header span,
+.lesson-header span,
+.roster-header span,
+.teacher-stream-copy span,
+.teacher-week-day-chip-meta,
+.group-picker-preview,
+.group-picker-meta,
+.group-picker-empty,
+.group-member-preview-empty,
+.field-hint,
+.empty-state {
+  color: var(--muted);
+}
+
+.lead {
+  max-width: 34ch;
+  font-size: 19px;
+}
+
+.hero-summary-card,
+.summary-card,
+.directory-item,
+.directory-fact,
+.directory-section,
+.entity-card,
+.lesson-card,
+.roster-card,
+.subscription-editor,
+.group-picker-toggle,
+.group-picker-summary,
+.group-picker-results,
+.group-student-option,
+.teacher-stream-card,
+.teacher-week-day-chip {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: none;
+}
+
+.login-panel {
+  padding: 28px;
+}
+
+.login-panel,
+.subscription-editor,
+.group-picker-results,
+.group-picker-summary {
+  background: var(--surface-2);
+}
+
+.admin-session-item,
+.dashboard-topline > div,
+.admin-tabs,
+.panel-topline,
+.subscription-editor-header,
+.directory-details,
+.directory-form,
+.directory-row + .directory-row,
+.entity-meta div,
+.empty-state {
+  border-color: var(--line);
+}
+
+.admin-tab-button,
+.operations-switch-button,
+.report-switch-button,
+.workspace-switch-button,
+.secondary-button,
+.small-button,
+.attendance-button {
+  border: 1px solid var(--line);
+  color: #24323a;
+  background: var(--surface);
+  box-shadow: none;
+}
+
+.admin-tab-button:hover,
+.operations-switch-button:hover,
+.report-switch-button:hover,
+.workspace-switch-button:hover,
+.secondary-button:hover,
+.small-button:hover,
+.attendance-button:hover,
+.group-student-option:hover,
+.teacher-stream-card:hover,
+.teacher-week-day-chip:hover {
+  border-color: #98b4bd;
+  background: #f7fbfb;
+  color: var(--ink);
+}
+
+.admin-tab-button.is-active,
+.operations-switch-button.is-active,
+.report-switch-button.is-active,
+.workspace-switch-button.is-active,
+.teacher-stream-card.is-active,
+.teacher-week-day-chip.is-active {
+  color: #ffffff;
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: none;
+}
+
+.admin-tab-button.is-active *,
+.operations-switch-button.is-active *,
+.report-switch-button.is-active *,
+.workspace-switch-button.is-active *,
+.teacher-stream-card.is-active *,
+.teacher-week-day-chip.is-active * {
+  color: inherit;
+}
+
+.teacher-week-day-chip.is-active .label,
+.teacher-week-day-chip.is-active .teacher-week-day-chip-meta,
+.teacher-week-day-chip.is-active span,
+.teacher-stream-card.is-active .label,
+.teacher-stream-card.is-active .teacher-stream-copy span {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.teacher-week-day-chip.is-active strong,
+.teacher-stream-card.is-active strong {
+  color: #ffffff;
+}
+
+.teacher-stream-card.is-active .badge,
+.teacher-stream-card.is-active .directory-token {
+  color: #24323a;
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.78);
+}
+
+.teacher-stream-card.is-active .badge-success {
+  color: #07574f;
+  background: #dff4ef;
+  border-color: #b8ddd5;
+}
+
+.teacher-stream-card.is-active .badge-warning {
+  color: #7a4200;
+  background: #fff1d8;
+  border-color: #f4cf94;
+}
+
+.teacher-stream-card.is-active .badge-muted {
+  color: #4b5961;
+  background: #edf1f3;
+  border-color: #d5dde2;
+}
+
+.primary-button {
+  color: #ffffff;
+  background: var(--accent);
+  box-shadow: none;
+}
+
+.primary-button:hover {
+  background: var(--accent-strong);
+}
+
+.primary-button:active,
+.secondary-button:active,
+.small-button:active,
+.attendance-button:active,
+.admin-tab-button:active,
+.operations-switch-button:active,
+.report-switch-button:active,
+.workspace-switch-button:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.small-button.edit {
+  color: #ffffff;
+  background: var(--accent);
+}
+
+.small-button.delete {
+  color: #ffffff;
+  background: var(--danger);
+}
+
+.attendance-button.present {
+  color: #ffffff;
+  background: var(--accent);
+}
+
+.attendance-button.absent {
+  color: #24323a;
+  background: #eef1f3;
+}
+
+.field span,
+.group-picker-search .label {
+  color: #24323a;
+  font-weight: 650;
+}
+
+.field input,
+.field select,
+.group-picker-search input {
+  border-color: #c8d4da;
+  background: #ffffff;
+  color: var(--ink);
+  border-radius: 8px;
+}
+
+.field select option {
+  background: #ffffff;
+  color: var(--ink);
+}
+
+.field input::placeholder,
+.group-picker-search input::placeholder {
+  color: #778893;
+  opacity: 1;
+}
+
+.field input:focus,
+.field select:focus,
+.group-picker-search input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+}
+
+.group-selection-chips {
+  border-color: #c8d4da;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.group-selection-chip,
+.group-picker-toggle-icon,
+.directory-avatar {
+  color: #ffffff;
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: none;
+}
+
+.directory-chevron {
+  color: var(--ink);
+  background: #edf3f4;
+}
+
+.summary-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.summary-card strong {
+  color: var(--ink);
+}
+
+.badge {
+  min-height: 28px;
+  border: 1px solid transparent;
+  letter-spacing: 0.04em;
+}
+
+.badge-success {
+  color: #07574f;
+  background: #dff4ef;
+  border-color: #b8ddd5;
+}
+
+.badge-muted {
+  color: #4b5961;
+  background: #edf1f3;
+  border-color: #d5dde2;
+}
+
+.badge-warning {
+  color: #7a4200;
+  background: #fff1d8;
+  border-color: #f4cf94;
+}
+
+.report-grid {
+  gap: 16px;
+}
+
+.report-panel {
+  padding: 20px;
+}
+
+.subscription-status-section {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+
+.subscription-status-section + .subscription-status-section {
+  margin-top: 8px;
+}
+
+.section-heading-row,
+.report-status-strip {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
+.section-heading-row p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.section-heading-row strong {
+  display: inline-grid;
+  place-items: center;
+  min-width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  color: #ffffff;
+  background: var(--accent);
+}
+
+.report-status-strip {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.report-status-strip span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: #24323a;
+}
+
+.report-status-strip strong {
+  color: var(--accent-strong);
+}
+
+.data-table-shell {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.data-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  color: var(--ink);
+}
+
+.data-table caption {
+  padding: 12px 14px 0;
+  color: var(--muted);
+  text-align: left;
+}
+
+.data-table th,
+.data-table td {
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.data-table th {
+  background: #f2f6f8;
+  color: #43616c;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.data-table td {
+  font-size: 14px;
+}
+
+.data-table tbody tr:hover {
+  background: #f8fbfb;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.data-table-actions {
+  min-width: 220px;
+}
+
+.data-table-actions .small-button + .small-button {
+  margin-left: 8px;
+}
+
 @media (max-width: 1080px) {
   .hero-shell,
   .hero-summary,
@@ -1453,7 +1983,7 @@ body[data-page="admin"] .admin-workspace::before {
   }
 
   .summary-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .subscription-editor-header {
@@ -1522,7 +2052,7 @@ body[data-page="admin"] .admin-workspace::before {
   .admin-panel,
   .report-panel {
     padding: 22px;
-    border-radius: 22px;
+    border-radius: 8px;
   }
 
   .dashboard::before,
@@ -1537,7 +2067,7 @@ body[data-page="admin"] .admin-workspace::before {
 
   .login-panel {
     padding: 22px 20px 20px;
-    border-radius: 24px;
+    border-radius: 8px;
   }
 
   .login-panel::before {
@@ -1569,6 +2099,7 @@ body[data-page="admin"] .admin-workspace::before {
   .roster-header,
   .workspace-panel-head,
   .teacher-focus-topline,
+  .section-heading-row,
   .subscription-editor-header,
   .panel-topline {
     flex-direction: column;
@@ -1595,6 +2126,15 @@ body[data-page="admin"] .admin-workspace::before {
 
   .teacher-week-days {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-hero,
+  .hero-shell {
+    min-height: auto;
   }
 
   .directory-form-actions {

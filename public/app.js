@@ -494,6 +494,79 @@ function badgeClassBySubscriptionStatus(status) {
   return "badge badge-muted";
 }
 
+function isActiveSubscriptionStatus(status) {
+  return status === "active";
+}
+
+function subscriptionControlText(subscription) {
+  if (!isActiveSubscriptionStatus(subscription.status)) {
+    return "Неактивен";
+  }
+
+  return Number(subscription.lessonsLeft) <= 2 ? "Низкий остаток" : "Под контролем";
+}
+
+function formatDaysRemaining(value) {
+  const days = Number(value);
+
+  if (!Number.isFinite(days)) {
+    return "—";
+  }
+
+  if (days < 0) {
+    return `истек ${Math.abs(days)} дн. назад`;
+  }
+
+  if (days === 0) {
+    return "сегодня";
+  }
+
+  return `${days} дн.`;
+}
+
+function tableCellMarkup(cell) {
+  if (cell && typeof cell === "object") {
+    const className = cell.className ? ` class="${escapeHtml(cell.className)}"` : "";
+    return `<td${className}>${cell.html}</td>`;
+  }
+
+  return `<td>${escapeHtml(cell)}</td>`;
+}
+
+function renderDataTable(headers, rows, options = {}) {
+  if (!rows.length) {
+    return emptyState(options.emptyMessage || "Данных пока нет.");
+  }
+
+  const caption = options.caption
+    ? `<caption>${escapeHtml(options.caption)}</caption>`
+    : "";
+
+  return `
+    <div class="data-table-shell">
+      <table class="data-table">
+        ${caption}
+        <thead>
+          <tr>
+            ${headers.map((header) => `<th scope="col">${escapeHtml(header)}</th>`).join("")}
+          </tr>
+        </thead>
+        <tbody>
+          ${rows
+            .map(
+              (row) => `
+                <tr>
+                  ${row.map((cell) => tableCellMarkup(cell)).join("")}
+                </tr>
+              `
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
 function hideRoleWorkspaces() {
   nodes.adminWorkspace?.classList.add("hidden");
   nodes.teacherWorkspace?.classList.add("hidden");
@@ -1471,34 +1544,66 @@ function renderSubscriptions() {
     return;
   }
 
-  nodes.subscriptionsList.innerHTML = state.admin.subscriptions
+  const renderSubscriptionRows = (subscriptions) =>
+    subscriptions.map((subscription) => [
+      subscription.studentName,
+      `${formatOptionalValue(subscription.startDate)} - ${formatOptionalValue(subscription.endDate)}`,
+      `${subscription.lessonsLeft}/${subscription.lessonsTotal}`,
+      {
+        html: `<span class="${badgeClassBySubscriptionStatus(subscription.status)}">${escapeHtml(
+          formatSubscriptionStatus(subscription.status)
+        )}</span>`,
+      },
+      subscriptionControlText(subscription),
+      {
+        className: "data-table-actions",
+        html: `
+          <button class="small-button edit" data-entity="subscription" data-action="edit" data-id="${escapeHtml(
+            subscription.id
+          )}" type="button">Редактировать</button>
+          <button class="small-button delete" data-entity="subscription" data-action="delete" data-id="${escapeHtml(
+            subscription.id
+          )}" type="button">Удалить</button>
+        `,
+      },
+    ]);
+
+  const sections = [
+    {
+      title: "Активные абонементы",
+      hint: "Доступны для отметки посещаемости и списания занятий.",
+      items: state.admin.subscriptions.filter((subscription) =>
+        isActiveSubscriptionStatus(subscription.status)
+      ),
+      emptyMessage: "Активных абонементов пока нет.",
+    },
+    {
+      title: "Неактивные абонементы",
+      hint: "Завершенные и приостановленные записи без текущего доступа к занятиям.",
+      items: state.admin.subscriptions.filter(
+        (subscription) => !isActiveSubscriptionStatus(subscription.status)
+      ),
+      emptyMessage: "Неактивных абонементов пока нет.",
+    },
+  ];
+
+  nodes.subscriptionsList.innerHTML = sections
     .map(
-      (subscription) => `
-        <article class="entity-card subscription-card">
-          <div class="entity-card-header">
+      (section) => `
+        <section class="subscription-status-section">
+          <div class="section-heading-row">
             <div>
-              <strong>${escapeHtml(subscription.studentName)}</strong>
-              <span>${escapeHtml(`${formatOptionalValue(subscription.startDate)} - ${formatOptionalValue(subscription.endDate)}`)}</span>
+              <span class="label">${escapeHtml(section.title)}</span>
+              <p>${escapeHtml(section.hint)}</p>
             </div>
-            <div class="entity-actions">
-              <button class="small-button edit" data-entity="subscription" data-action="edit" data-id="${escapeHtml(subscription.id)}" type="button">Редактировать</button>
-              <button class="small-button delete" data-entity="subscription" data-action="delete" data-id="${escapeHtml(subscription.id)}" type="button">Удалить</button>
-            </div>
+            <strong>${escapeHtml(section.items.length)}</strong>
           </div>
-          <div class="subscription-card-summary">
-            <span class="${badgeClassBySubscriptionStatus(subscription.status)}">${escapeHtml(
-              formatSubscriptionStatus(subscription.status)
-            )}</span>
-            <span class="directory-token">${escapeHtml(
-              `${subscription.lessonsLeft}/${subscription.lessonsTotal} занятий`
-            )}</span>
-            <span class="directory-token">${escapeHtml(
-              subscription.lessonsLeft <= 2 && subscription.status === "active"
-                ? "Низкий остаток"
-                : "Под контролем"
-            )}</span>
-          </div>
-        </article>
+          ${renderDataTable(
+            ["Ученик", "Период", "Остаток", "Статус", "Контроль", "Действия"],
+            renderSubscriptionRows(section.items),
+            { emptyMessage: section.emptyMessage }
+          )}
+        </section>
       `
     )
     .join("");
@@ -1544,36 +1649,30 @@ function renderAttendanceReport() {
     return;
   }
 
-  nodes.attendanceReportList.innerHTML = state.admin.reports.attendance
-    .map((item) => {
+  nodes.attendanceReportList.innerHTML = renderDataTable(
+    ["Дата", "Ученик", "Группа", "Время", "Статус", "Преподаватель", "Абонемент", "Отмечено"],
+    state.admin.reports.attendance.map((item) => {
       const badgeClass = item.attendanceStatus ? "badge badge-success" : "badge badge-muted";
       const badgeText = item.attendanceStatus ? "Присутствовал" : "Отсутствовал";
       const subscriptionText =
         item.lessonsTotal && item.lessonsLeft !== null
-          ? `${item.lessonsLeft}/${item.lessonsTotal} занятий после отметки`
-          : "Без списания по абонементу";
+          ? `${item.lessonsLeft}/${item.lessonsTotal}`
+          : "Без списания";
 
-      return `
-        <article class="entity-card">
-          <div class="entity-card-header">
-            <div>
-              <strong>${escapeHtml(item.studentName)}</strong>
-              <span>${escapeHtml(
-                `${item.groupName} • ${item.lessonDate} • ${item.startTime} - ${item.endTime}`
-              )}</span>
-            </div>
-            <span class="${badgeClass}">${escapeHtml(badgeText)}</span>
-          </div>
-          <div class="entity-meta">
-            <div><span class="label">Преподаватель</span><strong>${escapeHtml(item.teacherName)}</strong></div>
-            <div><span class="label">Зал</span><strong>${escapeHtml(item.room)}</strong></div>
-            <div><span class="label">Абонемент</span><strong>${escapeHtml(subscriptionText)}</strong></div>
-            <div><span class="label">Отмечено</span><strong>${escapeHtml(item.markedAt)}</strong></div>
-          </div>
-        </article>
-      `;
+      return [
+        item.lessonDate,
+        item.studentName,
+        item.groupName,
+        `${item.startTime} - ${item.endTime}`,
+        {
+          html: `<span class="${badgeClass}">${escapeHtml(badgeText)}</span>`,
+        },
+        item.teacherName,
+        subscriptionText,
+        item.markedAt,
+      ];
     })
-    .join("");
+  );
 }
 
 function renderSubscriptionReport() {
@@ -1582,29 +1681,37 @@ function renderSubscriptionReport() {
     return;
   }
 
-  nodes.subscriptionsReportList.innerHTML = state.admin.reports.subscriptions
-    .map(
-      (item) => `
-        <article class="entity-card">
-          <div class="entity-card-header">
-            <div>
-              <strong>${escapeHtml(item.studentName)}</strong>
-              <span>${escapeHtml(item.groupNames)}</span>
-            </div>
-            <span class="${badgeClassBySubscriptionStatus(item.status)}">${escapeHtml(
-              formatSubscriptionStatus(item.status)
-            )}</span>
-          </div>
-          <div class="entity-meta">
-            <div><span class="label">Остаток</span><strong>${escapeHtml(`${item.lessonsLeft}/${item.lessonsTotal}`)}</strong></div>
-            <div><span class="label">Период</span><strong>${escapeHtml(`${item.startDate} - ${item.endDate}`)}</strong></div>
-            <div><span class="label">До окончания</span><strong>${escapeHtml(`${item.daysRemaining} дн.`)}</strong></div>
-            <div><span class="label">Статус</span><strong>${escapeHtml(formatSubscriptionStatus(item.status))}</strong></div>
-          </div>
-        </article>
-      `
-    )
-    .join("");
+  const activeCount = state.admin.reports.subscriptions.filter((item) =>
+    isActiveSubscriptionStatus(item.status)
+  ).length;
+  const inactiveCount = state.admin.reports.subscriptions.length - activeCount;
+  const attentionCount = state.admin.reports.subscriptions.filter(
+    (item) => isActiveSubscriptionStatus(item.status) && Number(item.lessonsLeft) <= 2
+  ).length;
+
+  nodes.subscriptionsReportList.innerHTML = `
+    <div class="report-status-strip">
+      <span><strong>${escapeHtml(activeCount)}</strong> активных</span>
+      <span><strong>${escapeHtml(inactiveCount)}</strong> неактивных</span>
+      <span><strong>${escapeHtml(attentionCount)}</strong> требуют контроля</span>
+    </div>
+    ${renderDataTable(
+      ["Раздел", "Ученик", "Группы", "Остаток", "Период", "До окончания", "Статус"],
+      state.admin.reports.subscriptions.map((item) => [
+        isActiveSubscriptionStatus(item.status) ? "Активные" : "Неактивные",
+        item.studentName,
+        item.groupNames,
+        `${item.lessonsLeft}/${item.lessonsTotal}`,
+        `${item.startDate} - ${item.endDate}`,
+        formatDaysRemaining(item.daysRemaining),
+        {
+          html: `<span class="${badgeClassBySubscriptionStatus(item.status)}">${escapeHtml(
+            formatSubscriptionStatus(item.status)
+          )}</span>`,
+        },
+      ])
+    )}
+  `;
 }
 
 function renderScheduleReport() {
@@ -1613,30 +1720,32 @@ function renderScheduleReport() {
     return;
   }
 
-  nodes.scheduleReportList.innerHTML = state.admin.reports.schedule
-    .map(
-      (item) => `
-        <article class="entity-card">
-          <div class="entity-card-header">
-            <div>
-              <strong>${escapeHtml(item.groupName)}</strong>
-              <span>${escapeHtml(
-                `${item.lessonDate} • ${item.startTime} - ${item.endTime} • ${item.room}`
-              )}</span>
-            </div>
-            <span class="badge badge-muted">${escapeHtml(`Учеников: ${item.studentCount}`)}</span>
-          </div>
-          <div class="entity-meta">
-            <div><span class="label">Преподаватель</span><strong>${escapeHtml(item.teacherName)}</strong></div>
-            <div><span class="label">Отмечено</span><strong>${escapeHtml(`${item.markedCount}/${item.studentCount}`)}</strong></div>
-            <div><span class="label">Присутствовали</span><strong>${escapeHtml(item.presentCount)}</strong></div>
-            <div><span class="label">Отсутствовали</span><strong>${escapeHtml(item.absentCount)}</strong></div>
-            <div><span class="label">Без отметки</span><strong>${escapeHtml(item.unmarkedCount)}</strong></div>
-          </div>
-        </article>
-      `
-    )
-    .join("");
+  nodes.scheduleReportList.innerHTML = renderDataTable(
+    [
+      "Дата",
+      "Группа",
+      "Время",
+      "Зал",
+      "Преподаватель",
+      "Учеников",
+      "Отмечено",
+      "Присутствовали",
+      "Отсутствовали",
+      "Без отметки",
+    ],
+    state.admin.reports.schedule.map((item) => [
+      item.lessonDate,
+      item.groupName,
+      `${item.startTime} - ${item.endTime}`,
+      item.room,
+      item.teacherName,
+      item.studentCount,
+      `${item.markedCount}/${item.studentCount}`,
+      item.presentCount,
+      item.absentCount,
+      item.unmarkedCount,
+    ])
+  );
 }
 
 function renderAdminWorkspace() {
